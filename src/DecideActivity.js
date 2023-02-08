@@ -3,22 +3,61 @@ import React, { Component } from 'react'
  class DecideActivity extends Component {
 
   state ={
-    longitude:0,
+    latitude:0,
     error:""
-  }
+  };
+
+
+
+  decideActivity(lat){
+
+    const currentMonth = new Date().getMonth();
+
+    if(lat<0){
+      //Güney yarımküre
+
+      if(currentMonth > 3 && currentMonth<9 ){
+        return "Spor salonuna gidebilirsin"
+      }
+      else{
+        return "Yüzmeye gidebilirsin"
+      }
+
+    }
+    else{
+      //Kuzey yarımküre
+
+      if(currentMonth > 9 && currentMonth<4){
+        return "Spor salonuna gidebilirsin"
+      }
+      else{
+        return "Yüzmeye gidebilirsin"
+      }
+    }
+  };
+
+ 
   render() {
+
+  // e.preventDefault();
+   
+    const{latitude,error} = this.state;
+     console.log(this.decideActivity(latitude));
+  
     window.navigator.geolocation.getCurrentPosition((position) => {
 
+      //console.log(position);
+
       this.setState({
-        longitude:position.coords.longitude
+        latitude:position.coords.latitude
       })
 
-        console.log(position);
+    
 
       },
       (err) =>{
-     
-        console.log(err);
+
+         console.log(err);
 
         this.setState({
           error:err.message
@@ -27,29 +66,31 @@ import React, { Component } from 'react'
       }
       );
 
-      const{longitude,error} = this.state;
+    
 
-      if(longitude !== 0 &&  !error){
+      if(latitude !== 0 &&  !error){
         return(
-           <div> 
-            Boylam : {longitude}
+           <div>
+            Enlem : {latitude}
 
            </div>
         )
       }
 
-      else if(longitude === 0 && error){
+      else if(latitude === 0 && error){
         return(
           <div>
             Hata : {error}
           </div>
         )
-      }
+      };
     return (
       <div>
 
        Loading...
-        
+
+      
+
       </div>
     )
   }
