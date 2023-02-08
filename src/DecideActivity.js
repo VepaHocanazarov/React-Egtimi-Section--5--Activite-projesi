@@ -1,99 +1,109 @@
 import React, { Component } from 'react'
 
- class DecideActivity extends Component {
+class DecideActivity extends Component {
 
-  state ={
-    latitude:0,
-    error:""
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
 
-
-
-  decideActivity(lat){
-
-    const currentMonth = new Date().getMonth();
-
-    if(lat<0){
-      //Güney yarımküre
-
-      if(currentMonth > 3 && currentMonth<9 ){
-        return "Spor salonuna gidebilirsin"
-      }
-      else{
-        return "Yüzmeye gidebilirsin"
-      }
-
+      latitude: null,
+      error: ""
     }
-    else{
-      //Kuzey yarımküre
 
-      if(currentMonth > 9 && currentMonth<4){
-        return "Spor salonuna gidebilirsin"
-      }
-      else{
-        return "Yüzmeye gidebilirsin"
-      }
-    }
-  };
-
- 
-  render() {
-
-  // e.preventDefault();
-   
-    const{latitude,error} = this.state;
-     console.log(this.decideActivity(latitude));
-  
     window.navigator.geolocation.getCurrentPosition((position) => {
 
       //console.log(position);
 
       this.setState({
-        latitude:position.coords.latitude
-      })
+        latitude: position.coords.latitude
+      });
+    },
+      (err) => {
 
-    
-
-      },
-      (err) =>{
-
-         console.log(err);
+        console.log(err);
 
         this.setState({
-          error:err.message
-        })
+          error: err.message
+        });
 
-      }
-      );
+      });
 
-    
+  };
 
-      if(latitude !== 0 &&  !error){
-        return(
-           <div>
-            Enlem : {latitude}
+  componentWillunmount(){
+    this.setState({
+      latitude:0
+    });
+  }
 
-           </div>
-        )
-      }
 
-      else if(latitude === 0 && error){
-        return(
-          <div>
-            Hata : {error}
+
+
+  decideActivity(lat) {
+
+    const currentMonth = new Date().getMonth();
+
+    const summer = {
+      text: "Yüzmeye gidebilirsin",
+      iconName: "sun"
+    };
+
+    const winter = {
+      text: "Spor salonuna gidebilirsin",
+      iconName: "snowflake"
+    }
+
+
+    if (lat < 0) {
+      //Güney yarımküre
+
+      return currentMonth > 5 && currentMonth < 8 ? summer  : winter ;
+
+     
+    }
+    else {
+      //Kuzey yarımküre
+      
+      return currentMonth > 8 && currentMonth < 8 ? winter : summer;
+    }
+  };
+
+
+  render() {
+
+    const { latitude, error } = this.state;
+    //console.log(this.decideActivity(latitude));
+
+    if (latitude !== 0 && !error) {
+
+      const activity = this.decideActivity(latitude);
+      return (
+        <h2 className="ui header">
+          <i className={`${activity.iconName} icon`} ></i>
+          <div className="content">
+            {activity.text}
           </div>
-        )
-      };
+        </h2>
+      )
+    }
+
+    else if (latitude === 0 && error) {
+      return (
+        <div>
+          Hata : {error}
+        </div>
+      )
+    };
     return (
       <div>
 
-       Loading...
+        Loading...
 
-      
+
 
       </div>
     )
   }
 }
 
-export default DecideActivity;
+export default DecideActivity; 
